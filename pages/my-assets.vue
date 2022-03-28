@@ -32,9 +32,7 @@
       </div>
       <div v-else>
         <div class="text-center mt-6">
-          <p class="text-2xl font-semibold text-black">
-            No items in marketplace.
-          </p>
+          <p class="text-2xl font-semibold text-black">No assets owned.</p>
         </div>
       </div>
     </div>
@@ -45,55 +43,24 @@
 import {
   defineComponent,
   ref,
-  reactive,
   useFetch,
   useContext,
+  reactive,
 } from '@nuxtjs/composition-api'
 import { ethers } from 'ethers'
-import Web3Modal from 'web3modal'
 import NFT from '@/contract/artifacts/contracts/NFT.sol/NFT.json'
 import Market from '@/contract/artifacts/contracts/NFTMarketPlace.sol/NFTMarketPlace.json'
 import { Item } from '@/interfaces/item'
-
 export default defineComponent({
-  name: 'HomePage',
-  layout: 'default',
+  name: 'MyAssets',
   setup() {
     const { $axios, $config } = useContext()
-
-    const nfts: Item[] = reactive([])
+    const nfts = reactive<Item[]>([])
     const loadingState = ref('not-loaded')
 
     const { fetch, fetchState } = useFetch(async () => {
       await loadNFTs()
     })
-
-    const buyNFTs = async (nft: Item) => {
-      try {
-        const web3modal = new Web3Modal()
-        const connection = await web3modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
-
-        const signer = await provider.getSigner()
-        const contract = new ethers.Contract(
-          $config.nftMarketAddress,
-          Market.abi,
-          signer
-        )
-        const price = ethers.utils.parseEther(nft.price.toString())
-        const transaction = await contract.createMarketSale(
-          $config.nftAddress,
-          nft.tokenId,
-          {
-            value: price,
-          }
-        )
-        await transaction.wait()
-        loadNFTs()
-      } catch (error) {
-        console.log(error)
-      }
-    }
 
     const loadNFTs = async () => {
       const provider = new ethers.providers.JsonRpcProvider()
@@ -107,7 +74,7 @@ export default defineComponent({
         Market.abi,
         provider
       )
-      const data = await marketContract.fetchMarketItems()
+      const data = await marketContract.fetchMyNFTs()
       const items: Item[] = await Promise.all(
         data.map(async (i: any) => {
           const tokenUri = await tokenContract.tokenURI(i.tokenId)
@@ -131,9 +98,7 @@ export default defineComponent({
     return {
       nfts,
       loadingState,
-      buyNFTs,
     }
   },
 })
 </script>
-

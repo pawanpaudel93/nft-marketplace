@@ -32,7 +32,7 @@ describe("NFTMarket", function () {
 
     const items = await market.fetchMarketItems()
     expect(items.length).to.equal(1)
-    expect(items[0].sold).to.equal(true)
+    expect(items[0].sold).to.equal(false)
     // const results = await Promise.all(items.map(async (i: any) => {
     //   const tokenUri = await nft.tokenURI(i.tokenId)
     //   let item = {

@@ -1,5 +1,6 @@
 <template>
-  <div class="flex justify-center">
+  <div class="text-center">
+    <h2 class="block text-2xl font-semibold text-black">Items Created</h2>
     <div class="px-4" style="max-width: 1600px">
       <div
         v-if="nfts.length > 0"
@@ -32,9 +33,45 @@
       </div>
       <div v-else>
         <div class="text-center mt-6">
-          <p class="text-2xl font-semibold text-black">
-            No items in marketplace.
-          </p>
+          <p class="text-xl font-semibold text-black">No assets owned.</p>
+        </div>
+      </div>
+    </div>
+    <hr class="my-12" />
+    <h2 class="block text-2xl font-semibold text-black">Items Sold</h2>
+    <div class="px-4" style="max-width: 1600px">
+      <div
+        v-if="sold.length > 0"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4"
+      >
+        <div
+          v-for="(nft, i) in sold"
+          :key="i"
+          class="border shadow rounded-xl overflow-hidden"
+        >
+          <img :src="nft.image" />
+          <div class="p-4">
+            <p style="height: 64px" class="text-2xl font-semibold">
+              {{ nft.name }}
+            </p>
+          </div>
+
+          <div class="p-4 bg-black">
+            <p class="text-2xl mb-4 font-bold text-white">
+              {{ nft.price }} Matic
+            </p>
+            <button
+              class="w-full bg-blue-500 text-white font-bold py-2 px-12 rounded"
+              @click="buyNFTs(nft)"
+            >
+              Buy
+            </button>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <div class="text-center mt-6">
+          <p class="text-xl font-semibold text-black">No assets owned.</p>
         </div>
       </div>
     </div>
@@ -45,55 +82,25 @@
 import {
   defineComponent,
   ref,
-  reactive,
   useFetch,
   useContext,
+  reactive,
 } from '@nuxtjs/composition-api'
 import { ethers } from 'ethers'
-import Web3Modal from 'web3modal'
 import NFT from '@/contract/artifacts/contracts/NFT.sol/NFT.json'
 import Market from '@/contract/artifacts/contracts/NFTMarketPlace.sol/NFTMarketPlace.json'
 import { Item } from '@/interfaces/item'
-
 export default defineComponent({
-  name: 'HomePage',
-  layout: 'default',
+  name: 'CreatorDashboard',
   setup() {
     const { $axios, $config } = useContext()
-
-    const nfts: Item[] = reactive([])
+    const nfts = reactive<Item[]>([])
+    const sold = reactive<Item[]>([])
     const loadingState = ref('not-loaded')
 
     const { fetch, fetchState } = useFetch(async () => {
       await loadNFTs()
     })
-
-    const buyNFTs = async (nft: Item) => {
-      try {
-        const web3modal = new Web3Modal()
-        const connection = await web3modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
-
-        const signer = await provider.getSigner()
-        const contract = new ethers.Contract(
-          $config.nftMarketAddress,
-          Market.abi,
-          signer
-        )
-        const price = ethers.utils.parseEther(nft.price.toString())
-        const transaction = await contract.createMarketSale(
-          $config.nftAddress,
-          nft.tokenId,
-          {
-            value: price,
-          }
-        )
-        await transaction.wait()
-        loadNFTs()
-      } catch (error) {
-        console.log(error)
-      }
-    }
 
     const loadNFTs = async () => {
       const provider = new ethers.providers.JsonRpcProvider()
@@ -107,7 +114,7 @@ export default defineComponent({
         Market.abi,
         provider
       )
-      const data = await marketContract.fetchMarketItems()
+      const data = await marketContract.fetchMyNFTs()
       const items: Item[] = await Promise.all(
         data.map(async (i: any) => {
           const tokenUri = await tokenContract.tokenURI(i.tokenId)
@@ -121,19 +128,21 @@ export default defineComponent({
             image: meta.image,
             name: meta.name,
             description: meta.description,
+            sold: i.sold,
           }
           return item
         })
       )
+      const soldItems = items.filter((i) => i.sold)
       nfts.push(...items)
+      sold.push(...soldItems)
       loadingState.value = 'loaded'
     }
     return {
       nfts,
+      sold,
       loadingState,
-      buyNFTs,
     }
   },
 })
 </script>
-
