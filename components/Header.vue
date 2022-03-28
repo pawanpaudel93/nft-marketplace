@@ -100,7 +100,7 @@
           </li>
           <li>
             <nuxt-link
-              to="/create-item"
+              to="/create-nft"
               exact
               class="
                 block
@@ -113,12 +113,12 @@
                 md:text-black-700 md:p-0
                 dark:text-white
               "
-              >Sell Digital Asset
+              >Sell NFT
             </nuxt-link>
           </li>
           <li>
             <nuxt-link
-              to="/my-assets"
+              to="/my-nfts"
               exact
               class="
                 block
@@ -131,12 +131,12 @@
                 md:text-black-700 md:p-0
                 dark:text-white
               "
-              >My Digital Assets
+              >My NFTs
             </nuxt-link>
           </li>
           <li>
             <nuxt-link
-              to="/creator-dashboard"
+              to="/dashboard"
               exact
               class="
                 block
@@ -149,7 +149,7 @@
                 md:text-black-700 md:p-0
                 dark:text-white
               "
-              >Creator Dashboard
+              >Dashboard
             </nuxt-link>
           </li>
         </ul>

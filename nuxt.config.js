@@ -51,7 +51,6 @@ export default {
   build: {},
 
   publicRuntimeConfig: {
-    nftAddress: process.env.NFT_ADDRESS,
     nftMarketAddress: process.env.NFT_MARKET_ADDRESS
   }
 }

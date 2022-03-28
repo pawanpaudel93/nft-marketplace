@@ -3,19 +3,20 @@
     <div class="w-1/2 flex flex-col pb-12">
       <input
         v-model="formInput.name"
-        placeholder="Asset Name"
+        placeholder="NFT Name"
         class="mt-8 border rounded p-4"
       />
       <textarea
         v-model="formInput.description"
+        placeholder="NFT Description"
         class="mt-2 border rounded p-4"
       />
       <input
         v-model="formInput.price"
-        placeholder="Asset Price in Matic"
+        placeholder="NFT Price in Matic"
         class="mt-2 border rounded p-4"
       />
-      <input type="file" name="Asset" class="my-4" @change="uploadToIPFS" />
+      <input type="file" name="NFT" class="my-4" @change="uploadToIPFS" />
       <img v-if="fileUrl" :src="fileUrl" class="rounded mt-4" width="350" />
 
       <div
@@ -40,9 +41,9 @@
 
       <button
         class="font-bold mt-4 bg-blue-500 text-white rounded p-4 shadow-lg"
-        @click="createItem"
+        @click="createNFT"
       >
-        Create Digital Asset
+        Create NFT
       </button>
     </div>
   </div>
@@ -59,7 +60,6 @@ import {
 import { ethers, BigNumber } from 'ethers'
 import { create as ipfsHttpCLient } from 'ipfs-http-client'
 import Web3Modal from 'web3modal'
-import NFT from '@/contract/artifacts/contracts/NFT.sol/NFT.json'
 import Market from '@/contract/artifacts/contracts/NFTMarketPlace.sol/NFTMarketPlace.json'
 
 const client = ipfsHttpCLient({
@@ -98,7 +98,7 @@ export default defineComponent({
       }
     }
 
-    const createItem = async () => {
+    const createNFT = async () => {
       const { name, description, price } = formInput
       if (!name || !description || !price) return
       const data = JSON.stringify({
@@ -110,7 +110,6 @@ export default defineComponent({
       try {
         const added = await client.add(data)
         const url = `https://ipfs.infura.io/ipfs/${added.path}`
-        console.log(url)
         createSale(url)
       } catch (error) {
         console.log('Error uploading to IPFS', error)
@@ -123,17 +122,7 @@ export default defineComponent({
       const provider = new ethers.providers.Web3Provider(connection)
 
       const signer = await provider.getSigner()
-      let contract = new ethers.Contract($config.nftAddress, NFT.abi, signer)
-      let transaction = await contract.createToken(url)
-      const receipt = await transaction.wait()
-
-      const event = receipt.events[0]
-      console.log(receipt)
-      const value = event.args.tokenId
-      const tokenId = value.toNumber()
-
-      const price = ethers.utils.parseEther(formInput.price.toString())
-      contract = new ethers.Contract(
+      const contract = new ethers.Contract(
         $config.nftMarketAddress,
         Market.abi,
         signer
@@ -141,15 +130,12 @@ export default defineComponent({
       const listingPrice = await contract
         .getListingPrice()
         .then((v: BigNumber) => v.toString())
-      transaction = await contract.createMarketItem(
-        $config.nftAddress,
-        tokenId,
-        price,
-        {
-          value: listingPrice,
-        }
-      )
+      const price = ethers.utils.parseEther(formInput.price.toString())
+      const transaction = await contract.createToken(url, price, {
+        value: listingPrice,
+      })
       await transaction.wait()
+
       router.push('/')
     }
 
@@ -157,7 +143,7 @@ export default defineComponent({
       fileUrl,
       formInput,
       uploadToIPFS,
-      createItem,
+      createNFT,
       uploadProgress,
     }
   },

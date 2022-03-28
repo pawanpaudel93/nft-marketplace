@@ -25,21 +25,18 @@
           <p class="text-2xl mb-4 font-bold text-white">
             Price - {{ nft.price }} Matic
           </p>
-
           <button
             class="w-full bg-blue-500 text-white font-bold py-2 px-12 rounded"
-            @click="buyNFTs(nft)"
+            @click="listNFT(nft)"
           >
-            Buy
+            List
           </button>
         </div>
       </div>
     </div>
     <div v-else>
       <div class="text-center mt-6">
-        <p class="text-2xl font-semibold text-black">
-          No items in marketplace.
-        </p>
+        <p class="text-2xl font-semibold text-black">No assets owned.</p>
       </div>
     </div>
   </div>
@@ -49,10 +46,10 @@
 import {
   defineComponent,
   ref,
-  reactive,
-  useFetch,
   useContext,
   useRouter,
+  reactive,
+  onMounted,
 } from '@nuxtjs/composition-api'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
@@ -60,49 +57,24 @@ import Market from '@/contract/artifacts/contracts/NFTMarketPlace.sol/NFTMarketP
 import { NFT } from '@/interfaces/nft'
 
 export default defineComponent({
-  name: 'HomePage',
-  layout: 'default',
+  name: 'MyAssets',
   setup() {
     const { $axios, $config } = useContext()
     const router = useRouter()
-    const nfts: NFT[] = reactive([])
+    const nfts = reactive<NFT[]>([])
     const loadingState = ref('not-loaded')
 
-    useFetch(async () => {
-      await loadNFTs()
-    })
-
-    const buyNFTs = async (nft: NFT) => {
-      try {
-        const web3modal = new Web3Modal()
-        const connection = await web3modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
-
-        const signer = await provider.getSigner()
-        const contract = new ethers.Contract(
-          $config.nftMarketAddress,
-          Market.abi,
-          signer
-        )
-        const price = ethers.utils.parseEther(nft.price.toString())
-        const transaction = await contract.createMarketSale(nft.tokenId, {
-          value: price,
-        })
-        await transaction.wait()
-        router.push('/my-nfts')
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
     const loadNFTs = async () => {
-      const provider = new ethers.providers.JsonRpcProvider()
+      const web3modal = new Web3Modal()
+      const connection = await web3modal.connect()
+      const provider = new ethers.providers.Web3Provider(connection)
+      const signer = await provider.getSigner()
       const marketContract = new ethers.Contract(
         $config.nftMarketAddress,
         Market.abi,
-        provider
+        signer
       )
-      const data = await marketContract.fetchMarketItems()
+      const data = await marketContract.fetchMyNFTs()
       const items: NFT[] = await Promise.all(
         data.map(async (i: any) => {
           const tokenURI = await marketContract.tokenURI(i.tokenId)
@@ -116,6 +88,7 @@ export default defineComponent({
             image: meta.image,
             name: meta.name,
             description: meta.description,
+            tokenURI,
           }
           return item
         })
@@ -123,12 +96,26 @@ export default defineComponent({
       nfts.push(...items)
       loadingState.value = 'loaded'
     }
+
+    function listNFT(nft: NFT) {
+      router.push({
+        name: 'resell-nft',
+        query: {
+          id: nft.tokenId,
+          image: nft.image,
+        },
+      })
+    }
+
+    onMounted(async () => {
+      await loadNFTs()
+    })
+
     return {
       nfts,
+      listNFT,
       loadingState,
-      buyNFTs,
     }
   },
 })
 </script>
-

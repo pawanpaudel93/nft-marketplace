@@ -18,9 +18,9 @@ contract NFTMarketPlace is ERC721URIStorage, Ownable {
 
     struct MarketItem {
         uint256 tokenId;
+        uint256 price;
         address payable seller;
         address payable owner;
-        uint256 price;
         bool sold;
     }
 
@@ -28,9 +28,9 @@ contract NFTMarketPlace is ERC721URIStorage, Ownable {
 
     event MarketItemEvent(
         uint256 indexed tokenId,
+        uint256 price,
         address seller,
         address owner,
-        uint256 price,
         bool sold
     );
 
@@ -68,13 +68,13 @@ contract NFTMarketPlace is ERC721URIStorage, Ownable {
 
         idToMarketItem[_tokenId] = MarketItem(
             _tokenId,
+            _price,
             payable(msg.sender),
             payable(address(this)),
-            _price,
             false
         );
         _transfer(msg.sender, address(this), _tokenId);
-        emit MarketItemEvent(_tokenId, msg.sender, address(0), _price, false);
+        emit MarketItemEvent(_tokenId, _price, msg.sender, address(0), false);
     }
 
     function createMarketSale(uint256 _tokenId) public payable {
@@ -110,14 +110,35 @@ contract NFTMarketPlace is ERC721URIStorage, Ownable {
         _transfer(msg.sender, address(this), _tokenId);
     }
 
+    function cancelTokenSale(uint256 _tokenId) public {
+        require(
+            idToMarketItem[_tokenId].seller == msg.sender,
+            "Only seller can cancel"
+        );
+        require(
+            idToMarketItem[_tokenId].sold == false,
+            "Only unsold items can be cancelled"
+        );
+        idToMarketItem[_tokenId].owner = payable(msg.sender);
+        idToMarketItem[_tokenId].seller = payable(address(0));
+
+        _transfer(address(this), msg.sender, _tokenId);
+    }
+
     function fetchMarketItems() public view returns (MarketItem[] memory) {
-        uint256 itemCount = _tokenIds.current();
-        uint256 unsoldItemCount = _tokenIds.current() - _itemsSold.current();
+        uint256 totalItemCount = _tokenIds.current();
+        uint256 itemCount = 0;
         uint256 currentIndex = 0;
 
-        MarketItem[] memory items = new MarketItem[](unsoldItemCount);
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (idToMarketItem[i + 1].owner == address(this)) {
+                itemCount++;
+            }
+        }
 
-        for (uint256 i = 0; i < itemCount; i++) {
+        MarketItem[] memory items = new MarketItem[](itemCount);
+
+        for (uint256 i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i + 1].owner == address(this)) {
                 MarketItem storage currentItem = idToMarketItem[i + 1];
                 items[currentIndex] = currentItem;
@@ -149,7 +170,7 @@ contract NFTMarketPlace is ERC721URIStorage, Ownable {
         return items;
     }
 
-    function fetchItemsCreated() public view returns (MarketItem[] memory) {
+    function fetchItemsListed() public view returns (MarketItem[] memory) {
         uint256 totalItemCount = _tokenIds.current();
         uint256 itemCount = 0;
         uint256 currentIndex = 0;
