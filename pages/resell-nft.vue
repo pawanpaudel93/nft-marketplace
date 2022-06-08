@@ -47,27 +47,31 @@ export default defineComponent({
     }
 
     async function listNFTForSale() {
-      if (!formInput.price) return
-      const web3Modal = new Web3Modal()
-      const connection = await web3Modal.connect()
-      const provider = new ethers.providers.Web3Provider(connection)
-      const signer = provider.getSigner()
+      try {
+        if (!formInput.price) return
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.providers.Web3Provider(connection)
+        const signer = provider.getSigner()
 
-      const priceFormatted = ethers.utils.parseEther(formInput.price)
-      const contract = new ethers.Contract(
-        $config.nftMarketAddress,
-        Market.abi,
-        signer
-      )
-      const listingPrice = await contract
-        .getListingPrice()
-        .then((v: BigNumber) => v.toString())
+        const priceFormatted = ethers.utils.parseEther(formInput.price)
+        const contract = new ethers.Contract(
+          $config.nftMarketAddress,
+          Market.abi,
+          signer
+        )
+        const listingPrice = await contract
+          .getListingPrice()
+          .then((v: BigNumber) => v.toString())
 
-      const tx = await contract.resellToken(id, priceFormatted, {
-        value: listingPrice,
-      })
-      await tx.wait()
-      router.push('/')
+        const tx = await contract.resellToken(id, priceFormatted, {
+          value: listingPrice,
+        })
+        await tx.wait()
+        router.push('/')
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     onMounted(() => {

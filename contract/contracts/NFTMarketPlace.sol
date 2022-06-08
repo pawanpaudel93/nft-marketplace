@@ -105,7 +105,7 @@ contract NFTMarketPlace is ERC721URIStorage, Ownable {
         idToMarketItem[_tokenId].price = price;
         idToMarketItem[_tokenId].seller = payable(msg.sender);
         idToMarketItem[_tokenId].owner = payable(address(this));
-        _itemsSold.decrement();
+        // _itemsSold.decrement();
 
         _transfer(msg.sender, address(this), _tokenId);
     }
