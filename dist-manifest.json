@@ -1,0 +1,27 @@
+{
+"manifest": "arweave/paths",
+"version": "0.1.0",
+"paths": {
+".nojekyll":{"id":"zSTWCIaaSeA1m2IFNLXoSL_y03eH5o5Cm2qZpWhVrho"},
+"_nuxt/0ed6b45.js":{"id":"Lxz7cgVLeY9iHUZDNbrwlXZd1gaISep6Owy5S8Sdg3Q"},
+"_nuxt/33339f1.js":{"id":"G1kjXSECcRR3_o5S7c2uDoR_STkHB7OJZ-Ig_Bw2nkE"},
+"_nuxt/0ce1b91.js":{"id":"lDKIsRLisNQmfbOCKtols6dhMIdTWXr18VHobFQ4dtc"},
+"favicon.ico":{"id":"79GtaSvzlqGqFRljC-dwvgVQ-hawIXbDza0soaeUrNA"},
+"index.html":{"id":"FDO8tjZsTn60uVlHMFUNDLZbdIRb1z7b_B1Uec0Knp0"},
+"200.html":{"id":"cf8m6Z9VHFESodOILBwQNcUK9qKoBnd6Vtw5pYmo80c"},
+"_nuxt/2285125.js":{"id":"YyhX3mIrwZh6lJS8eMcnflunvH4dhR3WChXZfOCcm8E"},
+"_nuxt/7ae7a1a.js":{"id":"L_WdUlbpUsqaFgWsxV4S-rkDlyc-_-K-XUNrLFFxpBE"},
+"_nuxt/afe75fb.js":{"id":"UjmQ9ZzFJeqSatv6fCPN5E9fFj-RlfOW6nd_Oo6kfkg"},
+"_nuxt/a51ad12.js":{"id":"wXWPDNjwbIC-Q-gVVufIEaGcfgk2vqtqqEIh_7PoEGA"},
+"_nuxt/static/1655022730/manifest.js":{"id":"ikxKJlwHfmtAtsIglT3RtzlLSPInzLCr-iIuC5zMQT4"},
+"_nuxt/LICENSES":{"id":"oxhxIl1bewNGKuQtjbAr70YyJXEYxnhtjDxdXMH69Uw"},
+"_nuxt/static/1655022730/payload.js":{"id":"vBvYhHgwlJh9TlZie4knGkZ52zBhdcNtMOmUvjc_86U"},
+"_nuxt/57bf529.js":{"id":"3QFFDnX0peDX6LCUl8O8AptwaXmlh9sfPmEi6DHJso4"},
+"_nuxt/static/1655022730/state.js":{"id":"rJYcFKcx90HQmqP32xdfIXN8XMDCQEbyfTE7_vOOvFo"},
+"_nuxt/d3d5aaa.js":{"id":"YdvpL4fPFszgVBpVgaUOTb43Wjecjbk6UYpyY8cGJuM"},
+"_nuxt/59f676d.js":{"id":"iUrykGjvS8Tn8ginzQ7bnNEU2s-Sx-CN93Wiq6x3Sh4"},
+"_nuxt/a1b5765.js":{"id":"qzOiGo4ucUuNT7tCQPeddLk6mS191VE87tW30ULRPaE"},
+"_nuxt/0e800b3.js":{"id":"qffANF5uNNRHgpwcxaCtZ_kE5gTdoFcllUZ1Hdp0IvU"}
+},
+"index":{"path":"index.html"}
+}
