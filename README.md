@@ -1,4 +1,5 @@
 # nft-marketplace
+Arweave Devnet URL: https://arweave.net/w8Iz_fSiZ15hatsdaDRwOpZzuXnlPM85XpfOUOq6Kr0
 
 ## Build Setup
 

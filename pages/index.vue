@@ -53,6 +53,7 @@ import {
   useFetch,
   useContext,
   useRouter,
+  onMounted,
 } from '@nuxtjs/composition-api'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
@@ -68,7 +69,7 @@ export default defineComponent({
     const nfts: NFT[] = reactive([])
     const loadingState = ref('not-loaded')
 
-    useFetch(async () => {
+    onMounted(async () => {
       await loadNFTs()
     })
 
@@ -96,7 +97,7 @@ export default defineComponent({
     }
 
     const loadNFTs = async () => {
-      const provider = new ethers.providers.JsonRpcProvider()
+      const provider = new ethers.providers.JsonRpcProvider($config.rpcUrl)
       const marketContract = new ethers.Contract(
         $config.nftMarketAddress,
         Market.abi,
@@ -131,4 +132,3 @@ export default defineComponent({
   },
 })
 </script>
-
