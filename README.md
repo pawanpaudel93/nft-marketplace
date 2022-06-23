@@ -1,5 +1,5 @@
 # nft-marketplace
-Arweave Devnet URL: https://arweave.net/w8Iz_fSiZ15hatsdaDRwOpZzuXnlPM85XpfOUOq6Kr0
+Arweave URL: https://arweave.net/h93gSoEPWUJC5100HSQSNqtaw3t8PcZ62_nV8vcCd7w
 
 [How to Build a Full Stack NFT Marketplace - V2 (2022)](https://dev.to/edge-and-node/building-scalable-full-stack-apps-on-ethereum-with-polygon-2cfb)
 
